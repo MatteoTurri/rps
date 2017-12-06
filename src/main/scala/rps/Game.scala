@@ -3,46 +3,42 @@ package rps
 object Game {
   def play(): Unit = {
     println("Please select your move: input 0 for Rock, 1 for Paper and 2 for Scissors")
-    val userInput = scala.io.StdIn.readInt()
-    val userMove = matchInput(userInput)
-    val cpuMove = getCpuMove()
-    println("User move is "+getMoveString(userMove))
-    println("CPU move is "+getMoveString(cpuMove))
-    println(getOutcome(userMove, cpuMove))
+    val userInput: String = scala.io.StdIn.readLine();
+    val userMove: Option[Move] = matchInput(userInput)
+    val cpuMove: Move = getCpuMove()
+    userMove.map(x => getOutcome(x, cpuMove)).getOrElse(println("User input is not valid"))
   }
  
-  def matchInput(x:Int): Move = {
+  private def matchInput(x: String): Option[Move] = {
     x match {
-      case 0 => Move.ROCK
-      case 1 => Move.PAPER
-      case 2 => Move.SCISSORS
-      case _ => Move.NOT_ALLOWED
+      case "0" => Some(Move.Rock)
+      case "1" => Some(Move.Paper)
+      case "2" => Some(Move.Scissors)
+      case _ => None
     }
   }
 
-  def getMoveString(x:Move): String = {
+  private def getMoveString(x: Move): String = {
     x match {
-      case Move.ROCK => "Rock"
-      case Move.PAPER => "Paper"
-      case Move.SCISSORS => "Scissors"
-      case Move.NOT_ALLOWED => "not allowed"
+      case Move.Rock => "Rock"
+      case Move.Paper => "Paper"
+      case Move.Scissors => "Scissors"
     }
   }
 
-  def getCpuMove(): Move = {
+  private def getCpuMove(): Move = {
     val r = scala.util.Random
-    val input = r.nextInt(3)
-    matchInput(input)
+    val input: String = r.nextInt(3).toString
+    matchInput(input).get
   }
 
-  def getOutcome(user:Move, cpu:Move): String = {
+  private def getOutcome(user: Move, cpu: Move): Unit = {
+    println("User move is "+getMoveString(user))
+    println("CPU move is "+getMoveString(cpu))
     (user,cpu) match {
-      case (Move.ROCK, Move.SCISSORS) => "User wins!"
-      case (Move.PAPER, Move.ROCK) => "User wins!"
-      case (Move.SCISSORS, Move.PAPER) => "User wins!"
-      case (Move.NOT_ALLOWED, _) => "Input is not valid"
-      case (x, y) if x == y => "Draw"
-      case _ => "CPU wins!"
+      case (Move.Rock, Move.Scissors) | (Move.Paper, Move.Rock) | (Move.Scissors, Move.Paper) => println("User wins!")
+      case (x, y) if x == y => println("Draw")
+      case _ => println("CPU wins!")
     }
   }
 }
