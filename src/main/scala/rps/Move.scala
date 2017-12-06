@@ -1,8 +1,10 @@
 package rps
 
-sealed trait Move
-object Move {
-  case object Rock extends Move
-  case object Paper extends Move
-  case object Scissors extends Move
+import io.buildo.enumero.annotations.indexedEnum
+
+@indexedEnum trait Move{
+  type Index = String
+  object Rock     {"0"}
+  object Paper    {"1"}
+  object Scissors {"2"}
 }

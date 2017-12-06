@@ -1,5 +1,9 @@
 package rps
 
+import scala.util.Random
+import io.buildo.enumero.CaseEnumIndex
+import io.buildo.enumero.CaseEnumSerialization
+
 object Game {
   def play(): Unit = {
     println("Please select your move: input 0 for Rock, 1 for Paper and 2 for Scissors")
@@ -10,26 +14,15 @@ object Game {
   }
  
   private def matchInput(x: String): Option[Move] = {
-    x match {
-      case "0" => Some(Move.Rock)
-      case "1" => Some(Move.Paper)
-      case "2" => Some(Move.Scissors)
-      case _ => None
-    }
+    CaseEnumIndex[Move].caseFromIndex(x)
   }
 
   private def getMoveString(x: Move): String = {
-    x match {
-      case Move.Rock => "Rock"
-      case Move.Paper => "Paper"
-      case Move.Scissors => "Scissors"
-    }
+    CaseEnumSerialization[Move].caseToString(x)
   }
 
   private def getCpuMove(): Move = {
-    val r = scala.util.Random
-    val input: String = r.nextInt(3).toString
-    matchInput(input).get
+    Random.shuffle(CaseEnumSerialization[Move].values).head
   }
 
   private def getOutcome(user: Move, cpu: Move): Unit = {
