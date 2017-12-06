@@ -1,5 +1,7 @@
 package rps
 
+import io.buildo.enumero._
+
 object Game {
   def play(): Unit = {
     println("Please select your move: input 0 for Rock, 1 for Paper and 2 for Scissors")
@@ -10,20 +12,11 @@ object Game {
   }
  
   private def matchInput(x: String): Option[Move] = {
-    x match {
-      case "0" => Some(Move.Rock)
-      case "1" => Some(Move.Paper)
-      case "2" => Some(Move.Scissors)
-      case _ => None
-    }
+    implicitly[CaseEnumIndex[Move]].caseFromIndex(x)
   }
 
   private def getMoveString(x: Move): String = {
-    x match {
-      case Move.Rock => "Rock"
-      case Move.Paper => "Paper"
-      case Move.Scissors => "Scissors"
-    }
+    implicitly[CaseEnumSerialization[Move]].caseToString(x)
   }
 
   private def getCpuMove(): Move = {
