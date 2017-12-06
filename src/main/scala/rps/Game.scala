@@ -6,10 +6,7 @@ object Game {
     val userInput: String = scala.io.StdIn.readLine();
     val userMove: Option[Move] = matchInput(userInput)
     val cpuMove: Move = getCpuMove()
-    if(userMove.isDefined)
-      getOutcome(userMove.get, cpuMove)
-    else
-      println("User input is not valid")
+    userMove.map(x => getOutcome(x, cpuMove)).getOrElse(println("User input is not valid"))
   }
  
   private def matchInput(x: String): Option[Move] = {
