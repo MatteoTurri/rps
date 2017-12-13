@@ -1,40 +1,26 @@
 package rps
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
-import akka.stream.{ ActorMaterializer, Materializer }
-import scala.io.StdIn
-import model._
+import akka.stream.ActorMaterializer
+import wiro.Config
+import wiro.server.akkaHttp._
+import wiro.server.akkaHttp.FailSupport._
+import rps.model._
 import de.heikoseeberger.akkahttpcirce.ErrorAccumulatingCirceSupport._
 import io.circe.generic.auto._
 import io.buildo.enumero.circe._
 
-object Webserver {
-  def main(args: Array[String]): Unit = {
+object GameServer extends App with RouterDerivationModule {
     
-    implicit val system = ActorSystem()
-    implicit val materializer = ActorMaterializer()
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+  implicit val executionContext = system.dispatcher
 
-    Http().bindAndHandle(route, "localhost", 8080)
-    StdIn.readLine("Press Return to exit")
-    system.terminate()
-  }
+  implicit def throwableResponse: ToHttpResponse[Throwable] = null
+  val gameRouter = deriveRouter[GameApi](new GameApiImpl)
 
-  private def route (implicit materializer: Materializer) = {
-
-    pathPrefix("rps") {
-      path("play"){
-        post {
-          entity(as[Request]) { request =>
-            complete {
-              Game.play(request.userMove)
-            }
-          }
-        }
-      }
-    }
-  } ~ options (complete())
-
+  val rpcServer = new HttpRPCServer(
+    config = Config("localhost", 8080),
+    routers = List(gameRouter)
+  )
 }

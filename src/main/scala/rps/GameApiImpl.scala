@@ -1,13 +1,15 @@
 package rps
 
 import scala.util.Random
+import scala.concurrent.{ExecutionContext, Future}
 import model.{ Move, Result, Response}
 import io.buildo.enumero.CaseEnumSerialization
 
-object Game {
-  def play(userMove: Move): Response = {
+class GameApiImpl(implicit ec: ExecutionContext) extends GameApi {
+  
+  override def play(userMove: Move): Future[Either[Throwable,Response]] = Future {
     val cpuMove: Move = getCpuMove()
-    Response(userMove, cpuMove, getOutcome(userMove, cpuMove))
+    Right(Response(userMove, cpuMove, getOutcome(userMove, cpuMove)))
   }
 
   private def getCpuMove(): Move = {
